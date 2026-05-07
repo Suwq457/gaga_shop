@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>🍯 嘎嘎的小铺</title>
+    <style>
+        body, html {
+            margin: 0; padding: 0;
+            background-color: #fff5f7;
+            font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+            height: 100%;
+        }
+        .page {
+            display: none;
+            padding: 30px 20px;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+        .page.active { display: block; }
+        
+        .header {
+            font-size: 24px;
+            color: #e84393;
+            margin: 30px 0 40px;
+            font-weight: bold;
+            text-align: center;
+        }
+        .grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 25px;
+        }
+        .card {
+            width: 150px; height: 150px;
+            background: white;
+            border-radius: 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 20px rgba(255,107,129,0.15);
+            cursor: pointer;
+        }
+        .card:active { transform: scale(0.96); }
+        .card .icon { font-size: 50px; margin-bottom: 8px; }
+        .card .title { font-size: 20px; color: #d63031; font-weight: bold; }
+        
+        .bottom-btns {
+            position: fixed;
+            bottom: 20px;
+            left: 0; right: 0;
+            padding: 0 30px;
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+        .btn {
+            padding: 15px 30px;
+            border-radius: 50px;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+            cursor: pointer;
+            flex: 1;
+        }
+        .btn-pink { background: #fab1a0; }
+        .btn-purple { background: #6c5ce7; }
+
+        .list-item {
+            background: white;
+            padding: 18px;
+            border-radius: 16px;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+            cursor: pointer;
+        }
+        .list-item img {
+            width: 44px; height: 44px;
+            border-radius: 8px;
+            margin-right: 15px;
+        }
+        .list-item .name { font-size: 20px; color: #2d3436; flex: 1; }
+        .list-item .arrow { font-size: 24px; color: #ff7675; }
+
+        .cart-item {
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            background: white;
+            border-radius: 14px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .cart-item img {
+            width: 44px; height: 44px;
+            border-radius: 8px;
+            margin-right: 12px;
+        }
+        .cart-item .info { flex: 1; }
+        .cart-item .info .n { font-size: 18px; font-weight: bold; display: block; }
+        .cart-item .info .c { font-size: 13px; color: #b2bec3; }
+        .cart-item .del {
+            color: #d63031;
+            border: 1px solid #d63031;
+            border-radius: 20px;
+            padding: 4px 14px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .order-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: white;
+            padding: 16px;
+            border-radius: 14px;
+            margin-bottom: 12px;
+        }
+        .order-item .item { font-weight: bold; }
+        .order-item .time { color: #b2bec3; font-size: 13px; }
+        .submit-bar {
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            background: white;
+            padding: 18px;
+            border-top: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .submit-btn {
+            background: #ff6b81;
+            color: white;
+            padding: 12px 30px;
+            border-radius: 30px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .back {
+            position: absolute;
+            top: 20px; left: 20px;
+            font-size: 28px;
+            cursor: pointer;
+            color: #d63031;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== 首页 ===== -->
+    <div id="home-page" class="page active">
+        <div class="header">💌 鹅鹅想要虾米lie？</div>
+        <div class="grid">
+            <div class="card" onclick="goToList('milktea')">
+                <div class="icon">🧋</div>
+                <div class="title">奶茶</div>
+            </div>
+            <div class="card" onclick="goToList('mainfood')">
+                <div class="icon">🍜</div>
+                <div class="title">主食</div>
+            </div>
+            <div class="card" onclick="goToList('tietie')">
+                <div class="icon">💕</div>
+                <div class="title">贴贴</div>
+            </div>
+        </div>
+        <div class="bottom-btns">
+            <div class="btn btn-pink" onclick="goOrders()">📋 订单记录</div>
+            <div class="btn btn-purple" onclick="goCart()">🛒 购物车</div>
+        </div>
+    </div>
+
+    <!-- ===== 列表页 ===== -->
+    <div id="list-page" class="page">
+        <div class="back" onclick="goHome()">‹</div>
+        <div class="header" id="list-title"></div>
+        <div id="list-items"></div>
+    </div>
+
+    <!-- ===== 购物车页 ===== -->
+    <div id="cart-page" class="page">
+        <div class="back" onclick="goHome()">‹</div>
+        <div class="header">🛒 鹅鹅的购物车</div>
+        <div id="cart-items"></div>
+        <div id="cart-empty" style="text-align:center;color:#b2bec3;margin-top:60px;display:none;">购物车是空的，快去选吧~</div>
+        <div class="submit-bar" id="cart-submit-bar" style="display:none;">
+            <span>共 <b id="cart-total">0</b> 件宝贝</span>
+            <div class="submit-btn" onclick="submitOrders()">一键下单 💌</div>
+        </div>
+    </div>
+
+    <!-- ===== 订单页 ===== -->
+    <div id="orders-page" class="page">
+        <div class="back" onclick="goHome()">‹</div>
+        <div class="header">📝 订单记录</div>
+        <div id="order-items"></div>
+        <div id="order-empty" style="text-align:center;color:#b2bec3;margin-top:60px;display:none;">还没有订单，快去下一单吧~</div>
+    </div>
+
+    <script>
+        const DATA = {
+            milktea: { title: '🥤 选一个奶茶品牌', items: ['CoCo', '一点点', '古茗', '蜜雪冰城', '茶百道', '喜茶', '沪上阿姨', '其他'] },
+            mainfood: { title: '🍜 今天想吃什么', items: ['螺蛳粉', '火锅', '烧烤', '凉拌菜', '麻辣烫', '炸鸡', '烤鱼', '汉堡', '烧腊', '沙县', '潮汕汤粉', '清真', '披萨', '其他'] },
+            tietie: { title: '💕 想怎么贴贴', items: ['小红书', '微信', '抖音', '视频', 'uno', '语音'] }
+        };
+        const CATE_NAME = { milktea:'奶茶', mainfood:'主食', tietie:'贴贴' };
+
+        function showPage(id) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+        function goHome() { showPage('home-page'); }
+        function goOrders() {
+            showPage('orders-page');
+            renderOrders();
+        }
+        function goCart() {
+            showPage('cart-page');
+            renderCart();
+        }
+    function goToList(type) {
+        showPage('list-page');
+        const cat = DATA[type];
+        document.getElementById('list-title').innerText = cat.title;
+        const container = document.getElementById('list-items');
+        // 图片文件名规则：和选项名完全一致，扩展名为 .jpg
+        container.innerHTML = cat.items.map(item => {
+            return `<div class="list-item" onclick="addToCart('${type}','${item}')">
+                <img src="images/${item}.jpg" onerror="this.style.display='none'" alt="${item}">
+                <div class="name">${item}</div>
+                <div class="arrow">›</div>
+            </div>`;
+        }).join('');
+    }
+
+        function addToCart(type, item) {
+            if (!confirm('鹅鹅想要【' + item + '】不？')) return;
+            let cart = JSON.parse(localStorage.getItem('sweet_cart') || '[]');
+            cart.unshift({
+                id: Date.now().toString(),
+                category: type,
+                categoryName: CATE_NAME[type] || '',
+                name: item
+            });
+            localStorage.setItem('sweet_cart', JSON.stringify(cart));
+            alert('已加入购物车 🛒');
+        }
+
+        function renderCart() {
+            const cart = JSON.parse(localStorage.getItem('sweet_cart') || '[]');
+            const container = document.getElementById('cart-items');
+            const emptyEl = document.getElementById('cart-empty');
+            const bar = document.getElementById('cart-submit-bar');
+            if (cart.length === 0) {
+                container.innerHTML = '';
+                emptyEl.style.display = 'block';
+                bar.style.display = 'none';
+                return;
+            }
+            emptyEl.style.display = 'none';
+            bar.style.display = 'flex';
+            document.getElementById('cart-total').innerText = cart.length;
+            container.innerHTML = cart.map(item => {
+                return `<div class="cart-item">
+                    <div class="info">
+                        <span class="n">${item.name}</span>
+                        <span class="c">${item.categoryName}</span>
+                    </div>
+                    <div class="del" onclick="removeCart('${item.id}')">删除</div>
+                </div>`;
+            }).join('');
+        }
+        function removeCart(id) {
+            let cart = JSON.parse(localStorage.getItem('sweet_cart') || '[]');
+            cart = cart.filter(i => i.id !== id);
+            localStorage.setItem('sweet_cart', JSON.stringify(cart));
+            renderCart();
+        }
+     async function submitOrders() {
+    const cart = JSON.parse(localStorage.getItem('sweet_cart') || '[]');
+    if (cart.length === 0) {
+        alert('购物车是空的');
+        return;
+    }
+    if (!confirm('想要这 ' + cart.length + ' 件好东西不？')) return;
+
+    // 1. 生成订单记录（和之前一样）
+    let orders = JSON.parse(localStorage.getItem('sweet_orders') || '[]');
+    const orderItems = [];
+    cart.forEach(item => {
+        orderItems.push(item.name);
+        orders.unshift({
+            id: Date.now().toString() + Math.random().toString(36).substr(2,5),
+            category: item.category,
+            item: item.name,
+            time: new Date().toLocaleString(),
+            msg: ''
+        });
+    });
+    localStorage.setItem('sweet_orders', JSON.stringify(orders));
+    localStorage.removeItem('sweet_cart');
+
+    // 2. 显示下单成功的提示
+    alert('下单成功！嘎嘎收到！');
+
+    // 3. 发送微信通知给摊主（你）
+    const APP_TOKEN = 'AT_vZMxeAmfAFTTEHEyhyqeTzzGCjocdjXj'; // 替换成你的 AppToken
+    const YOUR_UID = 'UID_le7u5Z2X6cY3E8lF4dhGli2A6CEC'; // 替换成你的 UID
+
+    const messageData = {
+        appToken: APP_TOKEN,
+        content: `鹅鹅点了：${orderItems.join('、')}`,
+        contentType: 1, // 1表示文字消息
+        uids: [YOUR_UID]
+    };
+
+    try {
+        const response = await fetch('http://wxpusher.zjiecode.com/api/send/message', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(messageData)
+        });
+        const result = await response.json();
+        if (result.code === 1000) {
+            console.log('微信通知发送成功');
+        } else {
+            console.error('通知发送失败:', result.msg);
+        }
+    } catch (error) {
+        console.error('发送通知时出错:', error);
+    }
+
+    // 下单成功后返回首页
+    goHome();
+}
+        function renderOrders() {
+            const orders = JSON.parse(localStorage.getItem('sweet_orders') || '[]');
+            const container = document.getElementById('order-items');
+            const emptyEl = document.getElementById('order-empty');
+            if (orders.length === 0) {
+                container.innerHTML = '';
+                emptyEl.style.display = 'block';
+                return;
+            }
+            emptyEl.style.display = 'none';
+            container.innerHTML = orders.map(o => {
+                return `<div class="order-item">
+                    <span class="item">【${o.item}】</span>
+                    <span class="time">${o.time}</span>
+                </div>`;
+            }).join('');
+        }
+    </script>
+</body>
+</html>

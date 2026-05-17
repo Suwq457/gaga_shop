@@ -252,29 +252,47 @@
         }
 
         function renderCart() {
-            const cart = JSON.parse(localStorage.getItem('sweet_cart') || '[]');
-            const container = document.getElementById('cart-items');
-            const emptyEl = document.getElementById('cart-empty');
-            const bar = document.getElementById('cart-submit-bar');
-            if (cart.length === 0) {
-                container.innerHTML = '';
-                emptyEl.style.display = 'block';
-                bar.style.display = 'none';
-                return;
-            }
-            emptyEl.style.display = 'none';
-            bar.style.display = 'flex';
-            document.getElementById('cart-total').innerText = cart.length;
-            container.innerHTML = cart.map(item => {
-                return `<div class="cart-item">
-                    <div class="info">
-                        <span class="n">${item.name}</span>
-                        <span class="c">${item.categoryName}</span>
-                    </div>
-                    <div class="del" onclick="removeCart('${item.id}')">删除</div>
-                </div>`;
-            }).join('');
-        }
+    const cart = JSON.parse(localStorage.getItem('sweet_cart') || '[]');
+    const container = document.getElementById('cart-items');
+    const emptyEl = document.getElementById('cart-empty');
+    const bar = document.getElementById('cart-submit-bar');
+    if (cart.length === 0) {
+        container.innerHTML = '';
+        emptyEl.style.display = 'block';
+        bar.style.display = 'none';
+        return;
+    }
+    emptyEl.style.display = 'none';
+    bar.style.display = 'flex';
+    document.getElementById('cart-total').innerText = cart.length;
+    container.innerHTML = cart.map(item => {
+        return `<div class="cart-item" style="flex-direction: column; align-items: stretch;">
+            <div style="display: flex; align-items: center;">
+                <div class="info" style="flex: 1;">
+                    <span class="n">${item.name}</span>
+                    <span class="c">${item.categoryName}</span>
+                </div>
+                <div class="del" onclick="removeCart('${item.id}')">删除</div>
+           	 </div>
+            <input 
+                type="text" 
+                class="cart-remark-input" 
+                placeholder="有莫得虾米备注？" 
+                value="${item.remark || ''}"
+                onblur="updateRemark('${item.id}', this.value)"
+                style="margin-top: 10px; padding: 8px 12px; border: 1px solid #f0f0f0; border-radius: 8px; font-size: 14px; width: 100%; box-sizing: border-box; outline: none;"
+            />
+      	  </div>`;
+   	 }).join('');
+	}
+	function updateRemark(id, remark) {
+    let cart = JSON.parse(localStorage.getItem('sweet_cart') || '[]');
+    const item = cart.find(i => i.id === id);
+    if (item) {
+        item.remark = remark;
+        localStorage.setItem('sweet_cart', JSON.stringify(cart));
+   		 }
+	}
         function removeCart(id) {
             let cart = JSON.parse(localStorage.getItem('sweet_cart') || '[]');
             cart = cart.filter(i => i.id !== id);
@@ -293,14 +311,15 @@
     let orders = JSON.parse(localStorage.getItem('sweet_orders') || '[]');
     const orderItems = [];
     cart.forEach(item => {
-        orderItems.push(item.name);
-        orders.unshift({
-            id: Date.now().toString() + Math.random().toString(36).substr(2,5),
-            category: item.category,
-            item: item.name,
-            time: new Date().toLocaleString(),
-            msg: ''
-        });
+   	 orderItems.push(item.name + (item.remark ? `(${item.remark})` : ''));
+  	  orders.unshift({
+      		  id: Date.now().toString() + Math.random().toString(36).substr(2,5),
+      		  category: item.category,
+       		 item: item.name,
+       		 remark: item.remark || '',  // 新增：保存备注
+      		  time: new Date().toLocaleString(),
+      	 	 msg: ''
+    	});
     });
     localStorage.setItem('sweet_orders', JSON.stringify(orders));
     localStorage.removeItem('sweet_cart');
@@ -349,10 +368,11 @@
             }
             emptyEl.style.display = 'none';
             container.innerHTML = orders.map(o => {
-                return `<div class="order-item">
-                    <span class="item">【${o.item}】</span>
-                    <span class="time">${o.time}</span>
-                </div>`;
+                const remarkText = o.remark ? ` <span style="color:#e84393; font-size:13px;">[${o.remark}]</span>` : '';
+   		 return `<div class="order-item">
+        		<span class="item">【${o.item}】${remarkText}</span>
+        		<span class="time">${o.time}</span>
+   		 </div>`;
             }).join('');
         }
     </script>
